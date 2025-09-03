@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>EverWatch — аудит безопасности (Reveal.js)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+
+  <!-- Reveal.js core styles via CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/black.css" id="theme">
+
+  <!-- Optional: code highlighting theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/monokai.css">
+
+  <style>
+    :root { font-size: 18px; }
+    @media (max-width: 1024px) { :root { font-size: 16px; } }
+    @media (max-width: 768px)  { :root { font-size: 15px; } }
+    @media (max-width: 480px)  { :root { font-size: 14px; } }
+
+    .reveal .slides p { line-height: 1.35; }
+    .reveal .slides ul { line-height: 1.3; }
+    .content-narrow { max-width: 1000px; margin: 0 auto; }
+    @media (max-width: 768px) { .content-narrow { max-width: 92vw; } }
+
+    pre code { font-size: 0.9rem; }
+    @media (max-width: 600px) { pre code { font-size: 0.8rem; } }
+
+    .hero h2.r-fit-text { font-weight: 800; letter-spacing: 0.02em; }
+
+    .twocol {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      align-items: start;
+    }
+    @media (max-width: 900px), (max-height: 700px) {
+      .twocol { grid-template-columns: 1fr; }
+    }
+
+    .media-stretch { max-width: 100%; object-fit: contain; }
+
+    .reveal .slides section.compact-slide {
+      --fz-h: clamp(22px, 2.6vw, 36px);
+      --fz-li: clamp(16px, 1.8vw, 24px);
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      hyphens: auto;
+    }
+    .reveal .slides section.compact-slide h3,
+    .reveal .slides section.compact-slide h4 { font-size: var(--fz-h); margin: 0 0 0.4rem; }
+    .reveal .slides section.compact-slide ul { margin: 0.2rem 0 0; }
+    .reveal .slides section.compact-slide li,
+    .reveal .slides section.compact-slide p { font-size: var(--fz-li); line-height: 1.25; }
+    .reveal .slides section.compact-slide .twocol { gap: 0.9rem; }
+
+    .chart-box { position: relative; width: 100%; height: 50vh; }
+    @media (max-height: 700px) { .chart-box { height: 46vh; } }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- 1. Титульный -->
+      <section data-auto-animate class="hero">
+        <h2 class="r-fit-text">EverWatch — аудит безопасности веб‑ресурсов</h2>
+        <p class="fragment">Комплексное сканирование (ZAP, Nuclei, SQLMap, Nikto, Gobuster) + ИИ‑рекомендации по устранению уязвимостей.</p>
+        <p class="fragment">Аудит: анализ и приоритизация без активной защиты в реальном времени.</p>
+      </section>
+
+      <!-- 2. Контекст и масштаб угроз (универсально) -->
+      <section>
+        <div class="content-narrow">
+          <h3>Контекст и масштаб угроз</h3>
+          <ul>
+            <li>Устойчиво высокие показатели атак и инцидентов требуют регулярного поиска уязвимостей и плановой ремедиации.</li>
+            <li>Фокус на защите ПДн и онлайн‑сервисов организации через превентивное выявление и закрытие уязвимостей.</li>
+            <li>Практика: цикличные аудиты периметра и приложений с приоритизацией исправлений.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3. Что такое EverWatch -->
+      <section>
+        <div class="content-narrow">
+          <h3>Что такое EverWatch</h3>
+          <ul>
+            <li>Инструмент аудита: поиск уязвимостей веб‑ресурсов с экспертной интерпретацией и ИИ‑рекомендациями.</li>
+            <li>Не анти‑DDoS и не «щит»: без блокировок угроз — аудит и приоритизация исправлений.</li>
+            <li>Отчёт: сводка, подробные находки, шаги ремедиации и рекомендации для ИТ/ИБ‑команд.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4. Профессиональные инструменты (компакт) -->
+      <section class="compact-slide">
+        <div class="content-narrow twocol">
+          <div>
+            <h4>ИНСТРУМЕНТЫ</h4>
+            <ul>
+              <li>OWASP ZAP — OWASP Top 10: XSS, CSRF, SQLi и логические дефекты.</li>
+              <li>Nuclei — экспресс‑проверки CVE с базой 9000+ шаблонов.</li>
+              <li>SQLMap — автоматизация поиска/эксплуатации SQL‑инъекций.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>ПЕРИМЕТР И КОНФИГУРАЦИИ</h4>
+            <ul>
+              <li>Nikto — устаревшее ПО и конфигурационные ошибки веб‑серверов.</li>
+              <li>Gobuster — скрытые директории/файлы/поддомены.</li>
+              <li>ИИ‑анализ — приоритизация и рекомендации к исправлениям.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Как это работает (6 шагов) -->
+      <section>
+        <div class="content-narrow">
+          <h3>Как это работает: 6 шагов</h3>
+          <ol>
+            <li>Регистрация: создание аккаунта.</li>
+            <li>Добавление домена и подтверждение владения.</li>
+            <li>Создание проекта сканирования.</li>
+            <li>Выбор инструментов: ZAP, Nuclei, SQLMap, Nikto, Gobuster.</li>
+            <li>Автозапуск сканирования и анализ (до 2 часов).</li>
+            <li>Скачивание PDF‑отчёта с ИИ‑рекомендациями.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- 6. Иллюстрация процесса (Mermaid) -->
+      <section>
+        <h3>Иллюстрация процесса</h3>
+        <div class="mermaid">
+<pre>
+%%{init: { "theme": "dark", "flowchart": { "htmlLabels": false } }}%%
+flowchart LR
+  A["Подтверждение домена"] --> B{"Выбор инструментов\nZAP / Nuclei / SQLMap / Nikto / Gobuster"};
+  B --> C["Запуск сканирования"];
+  C --> D["ИИ-анализ и приоритизация"];
+  D --> E["PDF-отчёт"];
+  E --> F["Исправления на стороне организации"];
+  F --> G["Ретест"];
+  G --> H["Принятие результата"];
+</pre>
+        </div>
+        <p class="fragment">Диаграмма: от подтверждения домена до отчёта и ретеста.</p>
+      </section>
+
+      <!-- 7. Методология и покрытия (Mermaid) -->
+      <section>
+        <h3>Методология и покрытия</h3>
+        <div class="mermaid">
+<pre>
+%%{init: { "theme": "dark", "flowchart": { "htmlLabels": false } }}%%
+flowchart TB
+  subgraph Coverage["Покрытие"]
+    OWASP["OWASP-классы"] --> CVE["CVE"];
+    CVE --> CFG["Конфигурации"];
+    CFG --> SURF["Поверхность атак"];
+  end
+  subgraph Evidence["Воспроизводимость"]
+    POC["Доказательства (PoC)"] --> CTX["Контекст"];
+    CTX --> COND["Условия эксплуатации"];
+  end
+  subgraph Prior["Приоритизация"]
+    CRIT["Критичные"] --> QW["«Быстрые победы»"];
+  end
+  Coverage --> Evidence --> Prior;
+</pre>
+        </div>
+      </section>
+
+      <!-- 8. Что получает организация (оставлен без изменений) -->
+      <section class="compact-slide">
+        <div class="content-narrow twocol">
+          <div>
+            <h3>Что получает организация</h3>
+            <ul>
+              <li>PDF‑отчет: исполнительное резюме, сводная таблица, детализация уязвимостей с PoC/HTTP‑трейсами.</li>
+              <li>Рекомендации: бизнес‑приоритеты и пошаговые тех. фиксы (ТЗ и критерии приемки).</li>
+              <li>Журнал сканирования: параметры запуска.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Распределение уязвимостей</h3>
+            <div class="chart-box"><canvas id="severityDonut"></canvas></div>
+            <p class="fragment">Данные примера: 1 высокая, 5 средних, 14 низких/инфо (из отчета rzd‑merch.ru, 02.09.2025).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. Безопасность и ограничения -->
+      <section>
+        <div class="content-narrow">
+          <h3>Безопасность и ограничения</h3>
+          <ul>
+            <li>Аудит без блокировки угроз в реальном времени (отсутствие вмешательства в эксплуатацию).</li>
+            <li>Сканирование только по подтверждённым доменам и согласованному периметру.</li>
+            <li>Исправления на стороне организации/интегратора с поддержкой ИИ‑рекомендаций.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 10. Планы: CI и AI-агент (замена слайда «Пакеты/Процедуры») -->
+      <section class="compact-slide">
+        <div class="content-narrow twocol">
+          <div>
+            <h3>Планы: CI/CD интеграции</h3>
+            <ul>
+              <li>Brakeman — SAST для Rails (XSS/SQLi/CSRF и др.); запуск в GitLab CI как gem/CLI с HTML/JSON отчётами [источники на слайде].</li>
+              <li>GitLab SAST (Semgrep/Advanced SAST) — контейнерные анализаторы c JSON‑отчётами и правилами для Rails; включение шаблоном в .gitlab-ci.yml [источники на слайде].</li>
+              <li>Gitleaks — поиск секретов в истории и HEAD; интеграция в GitLab CI и pre‑commit [источники на слайде].</li>
+              <li>Dependency Scanning: GitLab DS (вкл. транзитивные зависимости), bundler‑audit (ruby‑advisory‑db), OSV‑Scanner (OSV.dev, мульти‑языки и контейнеры) [источники на слайде].</li>
+            </ul>
+          </div>
+          <div>
+            <h3>AI‑агент автопентеста (CAI)</h3>
+            <ul>
+              <li>CAI — open‑source фреймворк для построения AI‑агентов (офенсив/дефенсив), 300+ LLM, модульная архитектура, интеграция с инструментами.</li>
+              <li>Возможности: разведка, эксплуатация, пост‑эксплуатация и отчётность; параллельные агенты, HITL, кейсы CTF/bug bounty.</li>
+              <li>План: пилотная интеграция в стенд автопентеста с ограниченным периметром и аудит‑логами.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. Финал -->
+      <section>
+        <h2 class="r-fit-text">Готово к пилоту</h2>
+        <p>Согласуем периметр, запускаем аудит, выдаём отчёт до 2 часов и сопровождаем ретест.</p>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Reveal.js core & plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/markdown/markdown.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js"></script>
+
+  <!-- Reveal.js Mermaid plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+
+  <!-- Chart.js + DataLabels -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+
+  <script>
+    Reveal.initialize({
+      width: 1280,
+      height: 720,
+      margin: 0.06,
+      minScale: 0.2,
+      maxScale: 2.0,
+
+      hash: true,
+      controls: true,
+      progress: true,
+      center: true,
+      slideNumber: 'c/t',
+
+      mermaid: {
+        theme: 'dark',
+        flowchart: { htmlLabels: false }
+      },
+
+      plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMermaid ]
+    });
+
+    addEventListener('orientationchange', () => Reveal.layout(), { passive: true });
+    addEventListener('resize', () => Reveal.layout(), { passive: true });
+
+    // Диаграмма распределения уязвимостей: данные из отчета (пример 1/5/14)
+    Chart.register(ChartDataLabels);
+    document.addEventListener('DOMContentLoaded', () => {
+      const ctx = document.getElementById('severityDonut');
+      if (!ctx) return;
+
+      const counts = { high: 1, medium: 5, low: 14 };
+      const total = counts.high + counts.medium + counts.low;
+      const pct = (v) => Math.round((v / total) * 100);
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: [
+            `Высокие — ${counts.high} шт.`,
+            `Средние — ${counts.medium} шт.`,
+            `Низкие/инфо — ${counts.low} шт.`
+          ],
+          datasets: [{
+            data: [counts.high, counts.medium, counts.low],
+            backgroundColor: ['#ef4444','#f59e0b','#22c55e'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#fff' } },
+            tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${pct(ctx.parsed)}%` } },
+            datalabels: { color: '#fff', formatter: (v) => `${pct(v)}%`, font: { weight: 'bold' } }
+          },
+          cutout: '60%'
+        }
+      });
+    });
+  </script>
+
+  <!-- Источники для CI/AI-слайда (не выводятся зрителю):
+    Brakeman: https://brakemanscanner.org ; https://github.com/presidentbeef/brakeman
+    GitLab SAST: https://docs.gitlab.com/user/application_security/sast/analyzers/
+    Gitleaks: https://dev.to/sirlawdin/secret-scanning-in-ci-pipelines-using-gitleaks-and-pre-commit-hook-1e3f
+    GitLab Dependency Scanning: https://docs.gitlab.com/user/application_security/dependency_scanning/
+    bundler-audit: https://citizen428.net/blog/rails-quick-tips-4-keep-your-bundle-secure-with-bundler-audit/
+    OSV-Scanner: https://github.com/google/osv-scanner
+    CAI: https://github.com/aliasrobotics/cai ; https://arxiv.org/abs/2504.06017
+  -->
+</body>
+</html>
